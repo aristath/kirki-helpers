@@ -5,6 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * This is a wrapper class for Kirki.
+ * If the Kirki plugin is installed, then all CSS & Google fonts
+ * will be handled by the plugin.
+ * In case the plugin is not installed, this acts as a fallback
+ * ensuring that all CSS & fonts still work.
+ * It does not handle the customizer options, simply the frontend CSS.
+ */
 class My_Theme_Kirki {
 
 	protected static $config = array();
@@ -280,12 +288,20 @@ class My_Theme_Kirki {
 		if ( ! is_array( $css ) || empty( $css ) ) {
 			return '';
 		}
+		// Parse the generated CSS array and create the CSS string for the output.
 		foreach ( $css as $media_query => $styles ) {
+			// Handle the media queries
 			$final_css .= ( 'global' != $media_query ) ? $media_query . '{' : '';
 			foreach ( $styles as $style => $style_array ) {
 				$final_css .= $style . '{';
 					foreach ( $style_array as $property => $value ) {
 						$value = ( is_string( $value ) ) ? $value : '';
+						// Make sure background-images are properly formatted
+						if ( 'background-image' == $property ) {
+							if ( false === strrpos( $this->value, 'url(' ) ) {
+								$this->value = 'url("' . esc_url_raw( $value ) . '")';
+							}
+						}
 						$final_css .= $property . ':' . $value . ';';
 					}
 				$final_css .= '}';
