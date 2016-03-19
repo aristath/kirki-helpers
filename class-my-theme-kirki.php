@@ -263,12 +263,12 @@ class My_Theme_Kirki {
 
 	public function enqueue_fonts() {
 		// Check if we need to exit early
-		if ( empty( self::$fields ) || ! is_array( $fields ) ) {
+		if ( empty( self::$fields ) || ! is_array( self::$fields ) ) {
 			return;
 		}
 		foreach ( self::$fields as $field ) {
 			// Process typography fields
-			if ( isset( $field['type'] && 'typography' == $field['type'] ) {
+			if ( isset( $field['type'] ) && 'typography' == $field['type'] ) {
 				// Check if we've got everything we need
 				if ( ! isset( $field['kirki_config'] ) || ! isset( $field['settings'] ) ) {
 					continue;
