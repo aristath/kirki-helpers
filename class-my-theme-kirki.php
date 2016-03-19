@@ -132,12 +132,46 @@ class My_Theme_Kirki {
 			return;
 		}
 		// Kirki was not located, so we'll need to add our fields here.
-		// check that the "settings" argument has been defined
-		if ( isset( $args['settings'] ) ) {
+		// check that the "settings" & "type" arguments have been defined
+		if ( isset( $args['settings'] ) && isset( $args['type'] ) ) {
 			// Make sure we add the config_id to the field itself.
 			// This will make it easier to get the value when generating the CSS later.
 			if ( ! isset( $args['kirki_config'] ) ) {
 				$args['kirki_config'] = $config_id;
+			}
+			// Background fields need to be built separately
+			if ( 'background' == $args['type'] && isset( $args['output'] ) ) {
+				if ( isset( $args['default'] ) && is_array( $args['default'] ) ) {
+					foreach ( $args['default'] as $default_property => $default_value ) {
+						$subfield = $args;
+						// No need to process the opacity, it is factored in the color control.
+						if ( 'opacity' == $key ) {
+							continue;
+						}
+						$key             = esc_attr( $key );
+						$setting         = $key;
+						$output_property = 'background-' . $key;
+						if ( 'attach' == $key ) {
+							$output_property = 'background-attachment';
+						}
+						if ( is_string( $subfield['output'] ) ) {
+							$subfield['output'] = array( array(
+								'element'  => $args['output'],
+								'property' => $output_property,
+							) );
+						} else {
+							foreach ( $subfield['output'] as $key => $output ) {
+								$subfield['output'][ $key ]['property'] = $output_property;
+							}
+						}
+						$type = 'select';
+						if ( in_array( $key, array( 'color', 'image' ) ) ) {
+							$type = $key;
+						}
+						$property_setting = esc_attr( $args['settings'] ) . '_' . $setting;
+						self::$fields[ $property_setting ] = $subfield;
+					}
+				}
 			}
 			self::$fields[ $args['settings'] ] = $args;
 		}
