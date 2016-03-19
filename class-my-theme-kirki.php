@@ -301,6 +301,8 @@ class My_Theme_Kirki {
 							if ( false === strrpos( $this->value, 'url(' ) ) {
 								$this->value = 'url("' . esc_url_raw( $value ) . '")';
 							}
+						} else {
+							$value = esc_textarea( $value );
 						}
 						$final_css .= $property . ':' . $value . ';';
 					}
