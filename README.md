@@ -1,6 +1,8 @@
 # kirki-helpers
 
-Helper scripts for theme authors
+Helper scripts for theme authors.
+
+If you're starting a new theme based on Underscores, we recommend you start using our for from [https://github.com/aristath/_s](https://github.com/aristath/_s) as it already includes both of the methods described below, and also has 2 example settings for typography.
 
 ## Integrating Kirki in your themes
 
@@ -37,7 +39,7 @@ In order to make sure that user styles will continue to work even if they uninst
 require_once get_template_directory() . '/inc/class-my-theme-kirki.php';
 ```
 
-Once you do the above, instead of using `Kirki` to add your config, panels, sections & fields as documented in the [Kirki Documentation], you will have to use your own class.
+Once you do the above, instead of using `Kirki` to add your config, panels, sections & fields as documented in the [Kirki Documentation](https://kirki.org) examples, you will have to use your own class.
 
 Example:
 
