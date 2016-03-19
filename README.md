@@ -2,7 +2,7 @@
 
 Helper scripts for theme authors.
 
-If you're starting a new theme based on Underscores, we recommend you start using our for from [https://github.com/aristath/_s](https://github.com/aristath/_s) as it already includes both of the methods described below, and also has 2 example settings for typography.
+If you're starting a new theme based on [underscores](https://github.com/Automattic/_s), we recommend you start using our for from [https://github.com/aristath/_s](https://github.com/aristath/_s) as it already includes both of the methods described below, and also has 2 example settings for typography.
 
 ## Integrating Kirki in your themes
 
