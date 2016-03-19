@@ -341,7 +341,7 @@ class My_Theme_Kirki {
 						if ( is_array( $value['subset'] ) ) {
 							$value['subset'] = implode( ',', $value['subsets'] );
 						}
-						$url .= '&subset=' . implode( ',', $value['subset'] );
+						$url .= '&subset=' . $value['subset'];
 					}
 					$key = md5( $value['font-family'] . $value['variant'] . $value['subset'] );
 					// check that the URL is valid. we're going to use transients to make this faster.
