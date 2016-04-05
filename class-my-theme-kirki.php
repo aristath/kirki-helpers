@@ -15,20 +15,32 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class My_Theme_Kirki {
 
+	/**
+	 * @static
+	 * @access protected
+	 * @var array
+	 */
 	protected static $config = array();
+	
+	/**
+	 * @static
+	 * @access protected
+	 * @var array
+	 */
 	protected static $fields = array();
-	protected static $stylesheet_id;
-
+	
 	/**
 	 * The class constructor
 	 */
 	public function __construct() {
-		if ( ! class_exists( 'Kirki' ) ) {
-			// Add our CSS
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
-			// Add google fonts
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_fonts' ) );
+		// If Kirki exists then there's no reason to procedd
+		if ( class_exists( 'Kirki' ) ) {
+			return;
 		}
+		// Add our CSS
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+		// Add google fonts
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_fonts' ) );
 	}
 
 	/**
@@ -38,7 +50,6 @@ class My_Theme_Kirki {
 	 * @param    string    $field_id     The field_id (defined as 'settings' in the field arguments)
 	 *
 	 * @return 	mixed 	the saved value of the field.
-	 *
 	 */
 	public static function get_option( $config_id = '', $field_id = '' ) {
 		// if Kirki exists, use it.
@@ -84,26 +95,27 @@ class My_Theme_Kirki {
 	/**
 	 * Create a new panel
 	 *
-	 * @var		string		the ID for this panel
-	 * @var		array		the panel arguments
+	 * @param   string      the ID for this panel
+	 * @param   array       the panel arguments
 	 */
 	public static function add_panel( $id = '', $args = array() ) {
 		if ( class_exists( 'Kirki' ) ) {
 			Kirki::add_panel( $id, $args );
 		}
+		// If Kirki does not exist then there's no reason to add any panels.
 	}
 
 	/**
 	 * Create a new section
 	 *
-	 * @var		string		the ID for this section
-	 * @var		array		the section arguments
-	 * @param string $id
+	 * @param   string      the ID for this section
+	 * @param   array       the section arguments
 	 */
 	public static function add_section( $id, $args ) {
 		if ( class_exists( 'Kirki' ) ) {
 			Kirki::add_section( $id, $args );
 		}
+		// If Kirki does not exist then there's no reason to add any sections.
 	}
 
 
@@ -228,56 +240,59 @@ class My_Theme_Kirki {
 			$value = self::get_option( $field['kirki_config'], $field['settings'] );
 			// start parsing the output arguments of the field
 			foreach ( $field['output'] as $output ) {
-				// Make sure all output properties are properly set before proceeding
-				$element     = ( isset( $output['element'] ) )     ? $output['element']     : '';
-				$property    = ( isset( $output['property'] ) )    ? $output['property']    : '';
-				$media_query = ( isset( $output['media_query'] ) ) ? $output['media_query'] : 'global';
-				$prefix      = ( isset( $output['prefix'] ) )      ? $output['prefix']      : '';
-				$units       = ( isset( $output['units'] ) )       ? $output['units']       : '';
-				$suffix      = ( isset( $output['suffix'] ) )      ? $output['suffix']      : '';
+				$defaults = array(
+					'element'       => '',
+					'property'      => '',
+					'media_query'   => 'global',
+					'prefix'        => '',
+					'units'         => '',
+					'suffix'        => '',
+					'value_pattern' => '$',
+				);
+				$output = wp_parse_args( $output, $defaults );
 				// If element is an array, convert it to a string
-				if ( is_array( $element ) ) {
-					$element = array_unique( $element );
-					sort( $element );
-					$element = implode( ',', $element );
+				if ( is_array( $output['element'] ) ) {
+					$output['element'] = array_unique( $output['element'] );
+					sort( $output['element'] );
+					$output['element'] = implode( ',', $output['element'] );
 				}
 				// Simple fields
 				if ( ! is_array( $value ) ) {
-					if ( ! empty( $element ) && ! empty( $property ) ) {
-						$css[ $media_query ][ $element ][ $property ] = $prefix . $value . $units . $suffix;
+					$value = str_replace( '$', $value, $output['value_pattern'] );
+					if ( ! empty( $output['element'] ) && ! empty( $output['property'] ) ) {
+						$css[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $output['prefix'] . $value . $output['units'] . $output['suffix'];
 					}
 				} else {
 					if ( 'typography' == $field['type'] ) {
 						foreach ( $value as $key => $subvalue ) {
-							if ( 'font-family' == $key ) {
-								// add double quotes if needed
-								if ( false !== strpos( $subvalue, ' ' ) && false === strpos( $subvalue, '"' ) ) {
-									$css[ $media_query ][ $element ][ $key ] = '"' . $subvalue . '"';
-								}
+							// add double quotes if needed to font-families
+							if ( 'font-family' == $key && false !== strpos( $subvalue, ' ' ) && false === strpos( $subvalue, '"' ) ) {
+								$css[ $output['media_query'] ][ $output['element'] ]['font-family'] = '"' . $subvalue . '"';
 							}
+							// variants contain both font-weight & italics
 							if ( 'variant' == $key ) {
 								$font_weight = str_replace( 'italic', '', $subvalue );
 								$font_weight = ( in_array( $font_weight, array( '', 'regular' ) ) ) ? '400' : $font_weight;
 								// Is this italic?
 								$is_italic = ( false !== strpos( $subvalue, 'italic' ) );
-								$styles[ $media_query ][ $element ]['font-weight'] = $font_weight;
+								$styles[ $output['media_query'] ][ $output['element'] ]['font-weight'] = $font_weight;
 								if ( $is_italic ) {
-									$styles[ $media_query ][ $element ]['font-style'] = 'italic';
+									$styles[ $output['media_query'] ][ $output['element'] ]['font-style'] = 'italic';
 								}
 							} else {
-								$css[ $media_query ][ $element ][ $key ] = $subvalue;
+								$css[ $output['media_query'] ][ $output['element'] ][ $key ] = $subvalue;
 							}
 						}
 					} elseif ( 'spacing' == $field['type'] ) {
 						foreach ( $value as $key => $subvalue ) {
-							if ( empty( $property ) ) {
-								$property = $key;
+							if ( empty( $output['property'] ) ) {
+								$output['property'] = $key;
 							} elseif ( false !== strpos( $output['property'], '%%' ) ) {
-								$property = str_replace( '%%', $key, $property );
+								$output['property'] = str_replace( '%%', $key, $output['property'] );
 							} else {
-								$property = $property . '-' . $key;
+								$output['property'] = $output['property'] . '-' . $key;
 							}
-							$css[ $media_query ][ $element ][ $property ] = $subvalue;
+							$css[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $subvalue;
 						}
 					}
 				}
