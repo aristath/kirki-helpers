@@ -313,8 +313,8 @@ class My_Theme_Kirki {
 						$value = ( is_string( $value ) ) ? $value : '';
 						// Make sure background-images are properly formatted
 						if ( 'background-image' == $property ) {
-							if ( false === strrpos( $this->value, 'url(' ) ) {
-								$this->value = 'url("' . esc_url_raw( $value ) . '")';
+							if ( false === strrpos( $value, 'url(' ) ) {
+								$value = 'url("' . esc_url_raw( $value ) . '")';
 							}
 						} else {
 							$value = esc_textarea( $value );
