@@ -9,47 +9,50 @@ if ( ! class_exists( 'Kirki' ) ) {
 		 * as well as style the section & the iframe.
 		 */
 		class Kirki_Installer_Control extends WP_Customize_Control {
-			<style>
-			li#accordion-section-kirki_installer { background:#f3f3f3; margin:-15px 0; }
-			li#accordion-section-kirki_installer .accordion-section-title,li#accordion-section-kirki_installer .customize-section-title { display: none; }
-			li#accordion-section-kirki_installer ul.accordion-section-content { display: block; position: relative; left: 0; margin-top: 0 !important; padding-top: 0; padding-bottom: 0; }
-			#customize-controls li#accordion-section-kirki_installer .description { font-size: 1em; }
-			#customize-control-kirki_installer { margin-bottom: 0; }
-			</style>
-			<?php $plugins   = get_plugins(); ?>
-			<?php $installed = false; ?>
-			<?php foreach ( $plugins as $plugin ) : ?>
-				<?php if ( 'Kirki' == $plugin['Name'] || 'Kirki Toolkit' == $plugin['Name'] ) : ?>
-					<?php $installed = true; ?>
-				<?php endif; ?>
-			<?php endforeach; ?>
+			public $type = 'kirki-installer';
+			public function render_content() { ?>
+				<style>
+				li#accordion-section-kirki_installer { background:#f3f3f3; margin:-15px 0; }
+				li#accordion-section-kirki_installer .accordion-section-title,li#accordion-section-kirki_installer .customize-section-title { display: none; }
+				li#accordion-section-kirki_installer ul.accordion-section-content { display: block; position: relative; left: 0; margin-top: 0 !important; padding-top: 0; padding-bottom: 0; }
+				#customize-controls li#accordion-section-kirki_installer .description { font-size: 1em; }
+				#customize-control-kirki_installer { margin-bottom: 0; }
+				</style>
+				<?php $plugins   = get_plugins(); ?>
+				<?php $installed = false; ?>
+				<?php foreach ( $plugins as $plugin ) : ?>
+					<?php if ( 'Kirki' == $plugin['Name'] || 'Kirki Toolkit' == $plugin['Name'] ) : ?>
+						<?php $installed = true; ?>
+					<?php endif; ?>
+				<?php endforeach; ?>
 
-			<?php if ( ! $installed ) : ?>
+				<?php if ( ! $installed ) : ?>
 
-				<?php
-					$plugin_slug = 'kirki';
+					<?php
+						$plugin_slug = 'kirki';
 
-					$plugin_install_url = add_query_arg(
-						array(
-							'action' => 'install-plugin',
-							'plugin' => $plugin_slug,
-						),
-						self_admin_url( 'update.php' )
-					);
+						$plugin_install_url = add_query_arg(
+							array(
+								'action' => 'install-plugin',
+								'plugin' => $plugin_slug,
+							),
+							self_admin_url( 'update.php' )
+						);
 
-					$nonce_key = 'install-plugin_' . $plugin_slug;
+						$nonce_key = 'install-plugin_' . $plugin_slug;
 
-					$plugin_install_url = wp_nonce_url( $plugin_install_url, $nonce_key );
-				?>
+						$plugin_install_url = wp_nonce_url( $plugin_install_url, $nonce_key );
+					?>
 
-				<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url( $plugin_install_url ); ?>" aria-label="Install Kirki Toolkit now" data-name="Kirki Toolkit"><?php esc_html_e('Install Now','flocks'); ?></a>
+					<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url( $plugin_install_url ); ?>" aria-label="Install Kirki Toolkit now" data-name="Kirki Toolkit"><?php esc_html_e('Install Now','flocks'); ?></a>
 
-				<br/></br><!-- Added <br/> tags to fix the spacing -->
+					<br/></br><!-- Added <br/> tags to fix the spacing -->
 
-			<?php else : ?>
-				<hr>
-				<p><?php printf( __( 'The plugin is installed but not activated. Please <a href="%s">activate it</a>.', 'flocks' ), admin_url( 'plugins.php' ) ); ?></p>
-			<?php endif;
+				<?php else : ?>
+					<hr>
+					<p><?php printf( __( 'The plugin is installed but not activated. Please <a href="%s">activate it</a>.', 'flocks' ), admin_url( 'plugins.php' ) ); ?></p>
+				<?php endif;
+			}
 		}
 
 	}
