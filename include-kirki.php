@@ -1,4 +1,10 @@
 <?php
+/**
+ * This file implements custom requirements for the Kirki plugin.
+ * It can be used as-is in themes (drop-in).
+ *
+ * @package kirki-helpers
+ */
 
 if ( ! class_exists( 'Kirki' ) ) {
 
@@ -9,8 +15,22 @@ if ( ! class_exists( 'Kirki' ) ) {
 		 * as well as style the section & the iframe.
 		 */
 		class Kirki_Installer_Control extends WP_Customize_Control {
+
+			/**
+			 * The control-type.
+			 *
+			 * @access public
+			 * @var string
+			 */
 			public $type = 'kirki-installer';
-			public function render_content() { ?>
+
+			/**
+			 * Renders the control.
+			 *
+			 * @access public
+			 */
+			public function render_content() {
+				?>
 				<style>
 				li#accordion-section-kirki_installer { background:#f3f3f3; margin:-15px 0; }
 				li#accordion-section-kirki_installer .accordion-section-title,li#accordion-section-kirki_installer .customize-section-title { display: none; }
@@ -21,7 +41,7 @@ if ( ! class_exists( 'Kirki' ) ) {
 				<?php $plugins   = get_plugins(); ?>
 				<?php $installed = false; ?>
 				<?php foreach ( $plugins as $plugin ) : ?>
-					<?php if ( 'Kirki' == $plugin['Name'] || 'Kirki Toolkit' == $plugin['Name'] ) : ?>
+					<?php if ( 'Kirki' === $plugin['Name'] || 'Kirki Toolkit' === $plugin['Name'] ) : ?>
 						<?php $installed = true; ?>
 					<?php endif; ?>
 				<?php endforeach; ?>
@@ -44,13 +64,13 @@ if ( ! class_exists( 'Kirki' ) ) {
 						$plugin_install_url = wp_nonce_url( $plugin_install_url, $nonce_key );
 					?>
 
-					<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url( $plugin_install_url ); ?>" aria-label="Install Kirki Toolkit now" data-name="Kirki Toolkit"><?php esc_html_e('Install Now','flocks'); ?></a>
+					<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url( $plugin_install_url ); ?>" aria-label="Install Kirki Toolkit now" data-name="Kirki Toolkit"><?php esc_html_e( 'Install Now','textdomain' ); ?></a>
 
 					<br/></br><!-- Added <br/> tags to fix the spacing -->
 
 				<?php else : ?>
 					<hr>
-					<p><?php printf( __( 'The plugin is installed but not activated. Please <a href="%s">activate it</a>.', 'flocks' ), admin_url( 'plugins.php' ) ); ?></p>
+					<p><?php printf( __( 'The plugin is installed but not activated. Please <a href="%s">activate it</a>.', 'textdomain' ), esc_url_raw( admin_url( 'plugins.php' ) ) ); ?></p>
 				<?php endif;
 			}
 		}
@@ -60,9 +80,11 @@ if ( ! class_exists( 'Kirki' ) ) {
 	if ( ! function_exists( 'kirki_installer_register' ) ) {
 		/**
 		 * Registers the section, setting & control for the kirki installer.
+		 *
+		 * @param object $wp_customize The main customizer object.
 		 */
 		function kirki_installer_register( $wp_customize ) {
-			// Add the section/
+			// Add the section.
 			// You can add your description here.
 			// Please note that the title will not be displayed.
 			$wp_customize->add_section( 'kirki_installer', array(
