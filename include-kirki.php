@@ -17,7 +17,6 @@ if ( ! class_exists( 'Kirki' ) ) {
 				li#accordion-section-kirki_installer ul.accordion-section-content { display: block; position: relative; left: 0; margin-top: 0 !important; padding-top: 0; padding-bottom: 0; }
 				#customize-controls li#accordion-section-kirki_installer .description { font-size: 1em; }
 				#customize-control-kirki_installer { margin-bottom: 0; }
-				iframe#kirki-customizer-installer { margin-left: -15px; height: 158px; }
 				</style>
 				<?php $plugins   = get_plugins(); ?>
 				<?php $installed = false; ?>
@@ -29,16 +28,29 @@ if ( ! class_exists( 'Kirki' ) ) {
 
 				<?php if ( ! $installed ) : ?>
 
-					<script>
-					var installerStyles = '<style>#plugin-information-tabs,#plugin-information-content {display:none !important;}</style>';
-					jQuery('iframe#kirki-customizer-installer').load( function() {
-						jQuery('iframe#kirki-customizer-installer').contents().find("head").append( installerStyles );
-					});
-					</script>
-					<iframe id="kirki-customizer-installer" src="<?php echo admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=kirki' ); ?>"></iframe>
+					<?php
+						$plugin_slug = 'kirki';
+
+						$plugin_install_url = add_query_arg(
+							array(
+								'action' => 'install-plugin',
+								'plugin' => $plugin_slug,
+							),
+							self_admin_url( 'update.php' )
+						);
+
+						$nonce_key = 'install-plugin_' . $plugin_slug;
+
+						$plugin_install_url = wp_nonce_url( $plugin_install_url, $nonce_key );
+					?>
+
+					<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url( $plugin_install_url ); ?>" aria-label="Install Kirki Toolkit now" data-name="Kirki Toolkit"><?php esc_html_e('Install Now','flocks'); ?></a>
+
+					<br/></br><!-- Added <br/> tags to fix the spacing -->
+
 				<?php else : ?>
 					<hr>
-					<p><?php printf( __( 'The plugin is installed but not activated. Please <a href="%s">activate it</a>.', 'textdomain' ), admin_url( 'plugins.php' ) ); ?></p>
+					<p><?php printf( __( 'The plugin is installed but not activated. Please <a href="%s">activate it</a>.', 'flocks' ), admin_url( 'plugins.php' ) ); ?></p>
 				<?php endif;
 			}
 		}
