@@ -267,7 +267,7 @@ class My_Theme_Kirki {
 					if ( 'typography' == $field['type'] ) {
 						foreach ( $value as $key => $subvalue ) {
 							// exclude subsets as a property
-							if ( 'subsets' == $key ) [
+							if ( 'subsets' == $key ) {
 								continue;
 							}
 							// add double quotes if needed to font-families
