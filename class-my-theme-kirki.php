@@ -38,7 +38,7 @@ class My_Theme_Kirki {
 			return;
 		}
 		// Add our CSS
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ), 20 );
 		// Add google fonts
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_fonts' ) );
 	}
@@ -248,6 +248,7 @@ class My_Theme_Kirki {
 					'units'         => '',
 					'suffix'        => '',
 					'value_pattern' => '$',
+					'choice'        => '',
 				);
 				$output = wp_parse_args( $output, $defaults );
 				// If element is an array, convert it to a string
@@ -265,6 +266,10 @@ class My_Theme_Kirki {
 				} else {
 					if ( 'typography' == $field['type'] ) {
 						foreach ( $value as $key => $subvalue ) {
+							// exclude subsets as a property
+							if ( 'subsets' == $key ) [
+								continue;
+							}
 							// add double quotes if needed to font-families
 							if ( 'font-family' == $key && false !== strpos( $subvalue, ' ' ) && false === strpos( $subvalue, '"' ) ) {
 								$css[ $output['media_query'] ][ $output['element'] ]['font-family'] = '"' . $subvalue . '"';
@@ -273,11 +278,11 @@ class My_Theme_Kirki {
 							if ( 'variant' == $key ) {
 								$font_weight = str_replace( 'italic', '', $subvalue );
 								$font_weight = ( in_array( $font_weight, array( '', 'regular' ) ) ) ? '400' : $font_weight;
+								$css[ $output['media_query'] ][ $output['element'] ]['font-weight'] = $font_weight;
 								// Is this italic?
 								$is_italic = ( false !== strpos( $subvalue, 'italic' ) );
-								$styles[ $output['media_query'] ][ $output['element'] ]['font-weight'] = $font_weight;
 								if ( $is_italic ) {
-									$styles[ $output['media_query'] ][ $output['element'] ]['font-style'] = 'italic';
+									$css[ $output['media_query'] ][ $output['element'] ]['font-style'] = 'italic';
 								}
 							} else {
 								$css[ $output['media_query'] ][ $output['element'] ][ $key ] = $subvalue;
@@ -293,6 +298,10 @@ class My_Theme_Kirki {
 								$output['property'] = $output['property'] . '-' . $key;
 							}
 							$css[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $subvalue;
+						}
+					} elseif ( 'multicolor' == $field['type'] ) {
+						if ( ! empty( $output['element'] ) && ! empty( $output['property'] ) && ! empty( $output['choice'] ) ) {
+							$css[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $output['prefix'] . $value[ $output['choice'] ] . $output['units'] . $output['suffix'];
 						}
 					}
 				}
