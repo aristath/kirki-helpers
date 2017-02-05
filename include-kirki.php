@@ -52,12 +52,12 @@ if ( ! class_exists( 'Kirki' ) ) {
 				<li id="accordion-section-<?php echo esc_attr( $this->id ); ?>" class="<?php echo esc_attr( $classes ); ?>" style="border-top:none;border-bottom:1px solid #ddd;padding:7px 14px 16px 14px;text-align:right;">
 					<?php if ( ! $installed ) : ?>
 						<p style="text-align:left;margin-top:0;"><?php esc_attr_e( 'A plugin is required to take advantage of this theme\'s features in the customizer.', 'textdomain' ); ?></p>
-						<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url_raw( $plugin_install_url ); ?>" aria-label="Install Kirki Toolkit now" data-name="Kirki Toolkit">
+						<a class="install-now button-primary button" data-slug="kirki" href="<?php echo esc_url_raw( $plugin_install_url ); ?>" aria-label="<?php esc_attr_e( 'Install Kirki Toolkit now', 'textdomain' ); ?>" data-name="Kirki Toolkit">
 							<?php esc_html_e( 'Install Now', 'textdomain' ); ?>
 						</a>
 					<?php else : ?>
 						<p style="text-align:left;margin-top:0;"><?php esc_attr_e( 'You have installed Kirki. Activate it to take advantage of this theme\'s features in the customizer.', 'textdomain' ); ?></p>
-						<a class="install-now button-secondary button change-theme" data-slug="kirki" href="<?php echo esc_url_raw( self_admin_url( 'plugins.php' ) ); ?>" aria-label="Activate Kirki Toolkit now" data-name="Kirki Toolkit">
+						<a class="install-now button-secondary button change-theme" data-slug="kirki" href="<?php echo esc_url_raw( self_admin_url( 'plugins.php' ) ); ?>" aria-label="<?php esc_attr_e( 'Activate Kirki Toolkit now', 'textdomain' ); ?>" data-name="Kirki Toolkit">
 							<?php esc_html_e( 'Activate Now', 'textdomain' ); ?>
 						</a>
 					<?php endif; ?>
