@@ -159,40 +159,6 @@ class My_Theme_Kirki {
 			if ( ! isset( $args['kirki_config'] ) ) {
 				$args['kirki_config'] = $config_id;
 			}
-			// Background fields need to be built separately
-			if ( 'background' == $args['type'] && isset( $args['output'] ) ) {
-				if ( isset( $args['default'] ) && is_array( $args['default'] ) ) {
-					foreach ( $args['default'] as $default_property => $default_value ) {
-						$subfield = $args;
-						// No need to process the opacity, it is factored in the color control.
-						if ( 'opacity' == $key ) {
-							continue;
-						}
-						$key             = esc_attr( $key );
-						$setting         = $key;
-						$output_property = 'background-' . $key;
-						if ( 'attach' == $key ) {
-							$output_property = 'background-attachment';
-						}
-						if ( is_string( $subfield['output'] ) ) {
-							$subfield['output'] = array( array(
-								'element'  => $args['output'],
-								'property' => $output_property,
-							) );
-						} else {
-							foreach ( $subfield['output'] as $key => $output ) {
-								$subfield['output'][ $key ]['property'] = $output_property;
-							}
-						}
-						$type = 'select';
-						if ( in_array( $key, array( 'color', 'image' ) ) ) {
-							$type = $key;
-						}
-						$property_setting = esc_attr( $args['settings'] ) . '_' . $setting;
-						self::$fields[ $property_setting ] = $subfield;
-					}
-				}
-			}
 			self::$fields[ $args['settings'] ] = $args;
 		}
 	}
@@ -288,20 +254,24 @@ class My_Theme_Kirki {
 								$css[ $output['media_query'] ][ $output['element'] ][ $key ] = $subvalue;
 							}
 						}
-					} elseif ( 'spacing' == $field['type'] ) {
-						foreach ( $value as $key => $subvalue ) {
-							if ( empty( $output['property'] ) ) {
-								$output['property'] = $key;
-							} elseif ( false !== strpos( $output['property'], '%%' ) ) {
-								$output['property'] = str_replace( '%%', $key, $output['property'] );
-							} else {
-								$output['property'] = $output['property'] . '-' . $key;
-							}
-							$css[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $subvalue;
-						}
 					} elseif ( 'multicolor' == $field['type'] ) {
 						if ( ! empty( $output['element'] ) && ! empty( $output['property'] ) && ! empty( $output['choice'] ) ) {
 							$css[ $output['media_query'] ][ $output['element'] ][ $output['property'] ] = $output['prefix'] . $value[ $output['choice'] ] . $output['units'] . $output['suffix'];
+						}
+					} else {
+						foreach ( $value as $key => $subvalue ) {
+							$property = $key;
+							if ( false !== strpos( $output['property'], '%%' ) ) {
+								$property = str_replace( '%%', $key, $output['property'] );
+							} elseif ( ! empty( $output['property'] ) ) {
+								$output['property'] = $output['property'] . '-' . $key;
+							}
+							if ( 'background-image' === $output['property'] && false === strpos( $subvalue, 'url(' ) ) {
+								$subvalue = 'url("' . $subvalue . '")';
+							}
+							if ( $subvalue ) {
+								$css[ $output['media_query'] ][ $output['element'] ][ $property ] = $subvalue;
+							}
 						}
 					}
 				}
